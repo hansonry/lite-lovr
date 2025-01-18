@@ -6,7 +6,7 @@ local keymap = require "core.keymap"
 local style = require "core.style"
 local View = require "core.view"
 
-config.treeview_size = math.min(200 * SCALE, 300)
+config.treeview_size = 200 * SCALE --math.min(200 * SCALE, 300)
 
 local function get_depth(filename)
   local n = 0
@@ -142,7 +142,6 @@ function TreeView:draw()
 
   local icon_width = style.icon_font:get_width("D")
   local spacing = style.font:get_width(" ") * 2
-
   local doc = core.active_view.doc
   local active_filename = doc and system.absolute_path(doc.filename or "")
 

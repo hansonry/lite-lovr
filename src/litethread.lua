@@ -5,6 +5,8 @@ local lovr = { thread     = require 'lovr.thread',
                data       = require 'lovr.data',
                filesystem = require 'lovr.filesystem' }
 
+local common = require "core.common"
+
 local lite_editors_channel, inbound_channel, outbound_channel, threadname
 local lite_core, lite_command
 
@@ -127,7 +129,29 @@ _G.renderer = {
         rasterizer = lovr.data.newRasterizer(filename, size),
         set_tab_width = function(self, n) end,
         get_width = function(self, text)
-          local width = self.rasterizer:getWidth(text)
+          local utf8_chars = common.utf8_chars(tostring(text))
+          local max_width = self.rasterizer:getWidth()
+          local default_width = self.rasterizer:getAdvance("a")
+          local width = 0
+          local last_utf8_char = nil
+          for utf8_char in utf8_chars do
+            local char_width = self.rasterizer:getAdvance(utf8_char)
+            local valid_character = char_width > 0 and char_width <= max_width
+            if not valid_character then
+               if utf8_char == "\t" then
+                  char_width = default_width * 3 -- why not?
+               else
+                  char_width = default_width
+               end
+            end
+            
+            local kerning = 0
+            if valid_character and last_utf8_char ~= nil then
+               kerning = self.rasterizer:getKerning(last_utf8_char, utf8_char)
+            end
+            width = width + kerning + char_width
+            last_utf8_char = utf8_char
+          end
           return width
         end,
         get_height = function(self)

@@ -5,5 +5,7 @@ lovr.conf = function(t)
   t.window.height = 1080
   t.window.fullscreen = true
   t.modules.headset = true -- set to `false` to fix the camera on desktop simulator
+  t.graphics.stencil = "d24s8"
+  t.headset.stencil = "d24s8"
   --t.window.vsync = 0
 end
